@@ -1,64 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MediTrack Dashboard</title>
+    <title>MediTrack Production Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 <body>
 
-<h1>MediTrack Hospital Equipment Management</h1>
+<div class="navbar">
+    🏥 MediTrack | Hospital Equipment Management System
+</div>
 
-<!-- DASHBOARD CARDS -->
-<h3>Dashboard</h3>
+<div class="container">
 
-<p>Total Equipment: {{ total }}</p>
-<p>Active: {{ active }}</p>
-<p>Under Maintenance: {{ maintenance }}</p>
+    <!-- DASHBOARD STATS -->
+    <div class="stats-grid">
 
-<h3>Overdue Equipment</h3>
+        <div class="stat-card">
+            <h3>Total Equipment</h3>
+            <p>{{ equipment|length }}</p>
+        </div>
 
-{% if overdue %}
-<ul>
-    {% for item in overdue %}
-        <li>{{ item.equipment_name }} ({{ item.serial_number }})</li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No overdue maintenance</p>
-{% endif %}
+        <div class="stat-card">
+            <h3>Active</h3>
+            <p>
+                {{ equipment | selectattr("status", "equalto", "Active") | list | length }}
+            </p>
+        </div>
 
-<hr>
+        <div class="stat-card">
+            <h3>Under Maintenance</h3>
+            <p>
+                {{ equipment | selectattr("status", "equalto", "Under Maintenance") | list | length }}
+            </p>
+        </div>
 
-<!-- ADD BUTTON -->
-<a href="/add_equipment">Add New Equipment</a>
+        <div class="stat-card danger">
+            <h3>Decommissioned</h3>
+            <p>
+                {{ equipment | selectattr("status", "equalto", "Decommissioned") | list | length }}
+            </p>
+        </div>
 
-<h2>Equipment List</h2>
+    </div>
 
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Serial Number</th>
-        <th>Department</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
+    <!-- ACTION BUTTON -->
+    <div class="card">
+        <a href="/add_equipment">
+            <button class="btn">+ Add New Equipment</button>
+        </a>
+    </div>
 
-    {% for e in equipment %}
-    <tr>
-        <td>{{ e.equipment_id }}</td>
-        <td>{{ e.equipment_name }}</td>
-        <td>{{ e.serial_number }}</td>
-        <td>{{ e.department }}</td>
-        <td>{{ e.status }}</td>
-        <td>
-            <a href="/add_log/{{ e.equipment_id }}">Add Log</a>
-            |
-            <a href="/history/{{ e.equipment_id }}">History</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <!-- TABLE -->
+    <div class="card">
+        <h3>Equipment Inventory</h3>
+
+        <table class="table">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Serial</th>
+                <th>Department</th>
+                <th>Status</th>
+            </tr>
+
+            {% for item in equipment %}
+            <tr>
+                <td>{{ item.equipment_id }}</td>
+                <td>{{ item.equipment_name }}</td>
+                <td>{{ item.serial_number }}</td>
+                <td>{{ item.department }}</td>
+                <td class="status {{ item.status|lower|replace(' ', '-') }}">
+                    {{ item.status }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</div>
 
 </body>
 </html>
