@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MediTrack Dashboard</title>
+</head>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<body>
+
+<h1>MediTrack Hospital Equipment Management</h1>
+
+<!-- DASHBOARD CARDS -->
+<h3>Dashboard</h3>
+
+<p>Total Equipment: {{ total }}</p>
+<p>Active: {{ active }}</p>
+<p>Under Maintenance: {{ maintenance }}</p>
+
+<h3>Overdue Equipment</h3>
+
+{% if overdue %}
+<ul>
+    {% for item in overdue %}
+        <li>{{ item.equipment_name }} ({{ item.serial_number }})</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No overdue maintenance</p>
+{% endif %}
+
+<hr>
+
+<!-- ADD BUTTON -->
+<a href="/add_equipment">Add New Equipment</a>
+
+<h2>Equipment List</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Serial Number</th>
+        <th>Department</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for e in equipment %}
+    <tr>
+        <td>{{ e.equipment_id }}</td>
+        <td>{{ e.equipment_name }}</td>
+        <td>{{ e.serial_number }}</td>
+        <td>{{ e.department }}</td>
+        <td>{{ e.status }}</td>
+        <td>
+            <a href="/add_log/{{ e.equipment_id }}">Add Log</a>
+            |
+            <a href="/history/{{ e.equipment_id }}">History</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
